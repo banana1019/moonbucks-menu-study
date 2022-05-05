@@ -1,8 +1,8 @@
 // step1 요구사항 구현을 위한 전략
 // TODO 메뉴 추가
-// - [ ] 메뉴의 이름을 입력 받고 엔터키 입력으로 추가한다.
-// - [ ] 추가되는 메뉴의 아래 마크업은 <ul id="espresso-menu-list" class="mt-3 pl-0"></ul> 안에 삽입해야 한다.
-// - [ ] 총 메뉴 개수를 count하여 상단에 보여준다.
+// - [x] 메뉴의 이름을 입력 받고 엔터키 입력으로 추가한다.
+// - [x] 추가되는 메뉴의 아래 마크업은 <ul id="espresso-menu-list" class="mt-3 pl-0"></ul> 안에 삽입해야 한다.
+// - [x] 총 메뉴 개수를 count하여 상단에 보여준다.
 // - [ ] 메뉴가 추가되고 나면, input은 빈 값으로 초기화된다.
 // - [ ] 사용자 입력값이 빈 값이라면 추가되지 않는다.
 
@@ -16,10 +16,18 @@ function App() {
 
   // 사용자가 입력한 내용 받기
   $("#espresso-menu-name").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      const espressoMenuName = $("#espresso-menu-name").value;
-      const menuItemTemplate = (espressoMenuName) => {
-        return `
+    if (e.key !== "Enter") {
+      return;
+    }
+    if ($("#espresso-menu-name").value === "") {
+      alert("값을 입력해주세요!");
+      return;
+    }
+    const espressoMenuName = $("#espresso-menu-name").value; // input 태그에 입력한 값
+    console.log(espressoMenuName);
+    // 템플릿 만드는 함수
+    const menuItemTemplate = (espressoMenuName) => {
+      return `
           <li class="menu-list-item d-flex items-center py-2">
             <span class="w-100 pl-2 menu-name">${espressoMenuName}</span>
             <button
@@ -35,12 +43,21 @@ function App() {
               삭제
             </button>
           </li>`;
-      };
-      $("#espresso-menu-list").insertAdjacentHTML(
-        "beforeend",
-        menuItemTemplate(espressoMenuName)
-      );
-    }
+    };
+
+    // html 코드를 넣을 때는 innerHTML 이라는 속성으로 넣을 수 있다.
+    // $("#espresso-menu-list").innerHTML = menuItemTemplate(espressoMenuName);
+    // innerHTML을 사용하면 기존 내용이 지워져버린다.
+    // 밑에 추가되는 형태로 만들어야 됨
+    // Element.insertAdjacentHTML() 메서드를 사용하자
+    $("#espresso-menu-list").insertAdjacentHTML(
+      "beforeend",
+      menuItemTemplate(espressoMenuName)
+    );
+
+    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
+    $(".menu-count").innerText = `총 ${menuCount}개`; // HTMLElement.innerText
+    $("#espresso-menu-name").value = "";
   });
 }
 

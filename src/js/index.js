@@ -1,3 +1,9 @@
+// 인사이트
+// 1. 이벤트 위임
+// 2. 요구사항 전략
+// 3. $ 사용법
+// 4. 새로운 메서드들.. innerText, insertAdjacentHtml(), closest()
+
 // step1 요구사항 구현을 위한 전략
 // TODO 메뉴 추가
 // - [x] 메뉴의 이름을 입력 받고 엔터키 입력으로 추가한다.
@@ -23,30 +29,6 @@ function App() {
     const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
     $(".menu-count").innerText = `총 ${menuCount}개`; // HTMLElement.innerText
   };
-
-  $("#espresso-menu-list").addEventListener("click", (e) => {
-    // 수정 버튼을 눌렀을 때
-    if (e.target.classList.contains("menu-edit-button")) {
-      const $menuName = e.target.closest("li").querySelector(".menu-name");
-      const updatedMenuName = prompt(
-        "메뉴명을 수정하세요",
-        $menuName.innerText
-      );
-      $menuName.innerText = updatedMenuName;
-    }
-
-    if (e.target.classList.contains("menu-remove-button")) {
-      if (confirm("정말 삭제하시겠습니까?")) {
-        e.target.closest("li").remove();
-        updateMenuCount();
-      }
-    }
-  });
-
-  // form 태그가 자동으로 전송되는 걸 막아준다.
-  $("#espresso-menu-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-  });
 
   const addMenuName = () => {
     if ($("#espresso-menu-name").value === "") {
@@ -89,10 +71,37 @@ function App() {
     $("#espresso-menu-name").value = "";
   };
 
-  // 확인 버튼으로 사용자가 입력한 메뉴 추가
-  $("#espresso-menu-submit-button").addEventListener("click", () => {
-    addMenuName();
+  const updateMenuName = (e) => {
+    const $menuName = e.target.closest("li").querySelector(".menu-name");
+    const updatedMenuName = prompt("메뉴명을 수정하세요", $menuName.innerText);
+    $menuName.innerText = updatedMenuName;
+  };
+
+  const removeMenuName = (e) => {
+    if (confirm("정말 삭제하시겠습니까?")) {
+      e.target.closest("li").remove();
+      updateMenuCount();
+    }
+  };
+
+  $("#espresso-menu-list").addEventListener("click", (e) => {
+    // 수정 버튼을 눌렀을 때
+    if (e.target.classList.contains("menu-edit-button")) {
+      updateMenuName(e);
+    }
+
+    if (e.target.classList.contains("menu-remove-button")) {
+      removeMenuName(e);
+    }
   });
+
+  // form 태그가 자동으로 전송되는 걸 막아준다.
+  $("#espresso-menu-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+  });
+
+  // 확인 버튼으로 사용자가 입력한 메뉴 추가
+  $("#espresso-menu-submit-button").addEventListener("click", addMenuName); // 파라미터를 안 받는 함수는 함수이름만 적어도 된다.
 
   // 엔터키로 사용자가 입력한 메뉴 추가
   $("#espresso-menu-name").addEventListener("keypress", (e) => {

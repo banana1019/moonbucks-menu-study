@@ -18,14 +18,14 @@
 
 // TODO 페이지 접근시 최초 데이터 Read & Rendering
 // 페이지에 최초로 접근할 때는 에스프레소 메뉴가 먼저 보이게 한다.
-// - [] 로컬스토리지에서 에스프레소 메뉴 데이터를 읽어온다.
-// - [] 에스프레소 메뉴를 페이지에 그려준다.
+// - [x] 로컬스토리지에서 에스프레소 메뉴 데이터를 읽어온다.
+// - [x] 에스프레소 메뉴를 페이지에 그려준다.
 
 // TODO 품절 상태 관리
-// 품절 상태인 경우를 보여줄 수 있게, 품절 버튼을 추가하고 sold-out class를 추가하여 상태를 변경한다.
-// - [] 품절 버튼을 추가한다.
-// - [] 품절 버튼을 클릭하면 localStorage에 상태값이 저장된다.
-// - [] 클릭 이벤트 추가
+// - [x] 품절 상태인 경우를 보여줄 수 있게, 품절 버튼을 추가하고 sold-out class를 추가하여 상태를 변경한다.
+// - [x] 품절 버튼을 추가한다.
+// - [x] 품절 버튼을 클릭하면 localStorage에 상태값이 저장된다.
+// - [x] 클릭 이벤트 추가
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -61,7 +61,15 @@ function App() {
       .map((item, index) => {
         return `
           <li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
-            <span class="w-100 pl-2 menu-name">${item.name}</span>
+          <span class="${
+            item.soldOut ? "sold-out" : ""
+          } w-100 pl-2 menu-name">${item.name}</span>
+            <button
+              type="button"
+              class="bg-gray-50 text-gray-500 text-sm mr-1 menu-sold-out-button"
+            >
+              품절
+            </button>
             <button
               type="button"
               class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
@@ -81,7 +89,7 @@ function App() {
     // html 코드를 넣을 때는 innerHTML 이라는 속성으로 넣을 수 있다.
     // $("#espresso-menu-list").innerHTML = menuItemTemplate(espressoMenuName);
     // innerHTML을 사용하면 기존 내용이 지워져버린다.
-    // 밑에 추가되는 형태로 만들어야 됨
+    // 기존 내용 밑에 추가되는 형태로 만들어야 됨
     // Element.insertAdjacentHTML() 메서드를 사용하자
 
     // 위에서 하나의 문자열로 만들었으니까 innerHTML로 한 번에 넣어준다.
@@ -127,14 +135,29 @@ function App() {
     }
   };
 
+  const soldOutMenu = (e) => {
+    const menuId = e.target.closest("li").dataset.menuId;
+    this.menu[this.currentCategory][menuId].soldOut =
+      !this.menu[this.currentCategory][menuId].soldOut;
+    store.setLocalStorage(this.menu);
+    render();
+  };
+
   $("#menu-list").addEventListener("click", (e) => {
     // 수정 버튼을 눌렀을 때
     if (e.target.classList.contains("menu-edit-button")) {
       updateMenuName(e);
+      return;
     }
 
     if (e.target.classList.contains("menu-remove-button")) {
       removeMenuName(e);
+      return;
+    }
+
+    if (e.target.classList.contains("menu-sold-out-button")) {
+      soldOutMenu(e);
+      return;
     }
   });
 
